@@ -17,7 +17,8 @@ import {
   cilGroup,
   cilInfo,
   cilEnvelopeClosed,
-  cilPhone
+  cilPhone,
+  cilSpeech
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -67,11 +68,11 @@ const _nav = [
         name: 'Orders',
         to: '/orders/all-orders',
       },
-      {
-        component: CNavItem,
-        name: 'Refunds',
-        to: '/orders/refund',
-      }
+      // {
+      //   component: CNavItem,
+      //   name: 'Refunds',
+      //   to: '/orders/refund',
+      // }
       
     ],
   },
@@ -96,19 +97,21 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Inquires',
-        to: '/customers/inquiries',
-      },
-      {
-        component: CNavItem,
         name: 'Customer List',
-        to: '/customers/list',
+        to: '/customer/list',
       },
     ],
   },
+ 
   {
     component: CNavTitle,
     name: 'Support',
+  },
+  {
+    component: CNavItem,
+    name: 'Customer Inquiries',
+    to: '/customer-inquiries',
+    icon: <CIcon icon={cilSpeech} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,

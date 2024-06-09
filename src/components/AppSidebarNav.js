@@ -16,13 +16,13 @@ export const AppSidebarNav = ({ items }) => {
   useEffect(() => {
     // Filter out "Vendors" if userRole is 'vendor'
     const filtered = userRole === 'vendor'
-      ? filterMenu(items, ['Customer List', 'Vendors'])
+      ? filterMenu(items, ['Customers', 'Vendors', 'Customer Inquiries'])
       : items;
 
     setFilteredItems(filtered)
-  }, [])
+  }, [userRole])
 
-  console.log("sidebar-menu")
+
 
 
 
