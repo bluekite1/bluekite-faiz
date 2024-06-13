@@ -15,21 +15,23 @@ import {
   CForm,
   CFormInput,
   CSpinner,
+  CFormSwitch,
 } from '@coreui/react'
 
 import CIcon from '@coreui/icons-react'
 import { useDropzone } from 'react-dropzone'
 import { cilPencil, cilTrash, cilCloudUpload } from '@coreui/icons'
-import './Banner.css';
+import './Banner.css'
 import axiosInstance, { baseURL } from '../../utils/axiosConfig'
 import getBannerById from '../../api/banner/bannerapi'
 import deleteBanner from '../../api/banner/deleteBanner'
 // import getAllBanner from '../../api/banner/getAllBanner'
 import updateBanner from '../../api/banner/updateBanner'
+import activebannerapi from '../../api/banner/activebannerapi'
 import { useDispatch, useSelector } from 'react-redux'
 import { startLoading, stopLoading } from '../../store'
 
-const Banner = () => {
+const Banner = ({ banner }) => {
   const [visible, setVisible] = useState(false)
   const dispatch = useDispatch()
   const isLoading = useSelector((state) => state.loading)
@@ -37,6 +39,8 @@ const Banner = () => {
   const [modal, setModal] = useState(false)
   const [editingBanner, setEditingBanner] = useState(null)
   const [form, setForm] = useState({ name: '', images: [] })
+  const [isActive, setIsActive] = useState(false);
+  const [labelId, setLabelId] = useState('formSwitchCheckDefault');
 
   useEffect(() => {
     fetchBanners()
@@ -57,28 +61,48 @@ const Banner = () => {
 
   const handleSubmit = async (bannerId) => {
     try {
-      dispatch(startLoading());
+      dispatch(startLoading())
       if (editingBanner !== null) {
         const updatedCategories = banners.map((banner, index) =>
           index === editingBanner ? form : banner,
-        );
-        await updateBanner(bannerId, form);
-        await fetchBanners();
-        dispatch(stopLoading());
+        )
+        await updateBanner(bannerId, form)
+        await fetchBanners()
+        dispatch(stopLoading())
       } else {
-        await saveToDb();
-        dispatch(stopLoading());
+        await saveToDb()
+        dispatch(stopLoading())
       }
-      setForm({ name: '', images: [] });
-      setEditingBanner(null);
-      toggleModal();
-      setVisible(false); // Close the popup after successful submission
+      setForm({ name: '', images: [] })
+      setEditingBanner(null)
+      toggleModal()
+      setVisible(false) // Close the popup after successful submission
     } catch (error) {
-      dispatch(stopLoading());
+      dispatch(stopLoading())
+      console.log('error', error)
+      setVisible(false) // Close the popup even if there is an error
+    }
+  }
+
+  const getactionapi = async (id, isActive, setLabelId) => {
+    try {
+      // dispatch(startLoading());
+      const response = await activebannerapi(id, isActive);
+      console.log(response);
+      if (isActive) {
+        console.log("true");
+        // setLabelId('formSwitchCheckActive');
+      // dispatch(stopLoading());
+      } else {
+        // console.log("false");
+        // setLabelId('formSwitchCheckInactive');
+      }
+    } catch (error) {
+      // dispatch(stopLoading());
       console.log('error', error);
-      setVisible(false); // Close the popup even if there is an error
     }
   };
+
   const handleDelete = async (id) => {
     try {
       await deleteBanner(id)
@@ -165,6 +189,12 @@ const Banner = () => {
     }
   }
 
+  const handleSwitchToggle = () => {
+    const newActiveState = !isActive;
+    setIsActive(newActiveState);
+    getactionapi(banner?._id, newActiveState, setLabelId);
+  };
+
   return (
     <div>
       <h2>Manage Product Banners</h2>
@@ -202,6 +232,12 @@ const Banner = () => {
                 <CTableDataCell>{banner?.name}</CTableDataCell>
                 <CTableDataCell>
                   <div className="actions-cell">
+                    <CFormSwitch
+                      label=""
+                      id={labelId}
+                      checked={isActive}
+                      onChange={handleSwitchToggle}
+                    />
                     <CButton color="warning" onClick={() => handleEdit(index, banner?._id)}>
                       <CIcon icon={cilPencil} />
                     </CButton>{' '}
