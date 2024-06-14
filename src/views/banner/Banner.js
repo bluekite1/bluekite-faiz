@@ -42,6 +42,8 @@ const Banner = ({ banner }) => {
   const [isActive, setIsActive] = useState(false);
   const [labelId, setLabelId] = useState('formSwitchCheckDefault');
 
+  console.log("banners--->", banners)
+
   useEffect(() => {
     fetchBanners()
   }, [])
@@ -92,7 +94,7 @@ const Banner = ({ banner }) => {
       if (isActive) {
         console.log("true");
         // setLabelId('formSwitchCheckActive');
-      // dispatch(stopLoading());
+        // dispatch(stopLoading());
       } else {
         // console.log("false");
         // setLabelId('formSwitchCheckInactive');
@@ -154,14 +156,14 @@ const Banner = ({ banner }) => {
   const fetchBanners = async () => {
     try {
       dispatch(startLoading())
-      const response = await axiosInstance.get('/banner') // Adjust the URL as necessary
-      // const data = await response.json();
+      const response = await axiosInstance.get('/banner')
       if (response.status === 200) {
-        console.log('response.banners====>>', response.data.banners)
-        setBanners(response.data.banners)
+        const fetchedBanners = response.data.banners.map(banner => ({
+          ...banner,
+          isActive: banner.isActive || false,
+        }))
+        setBanners(fetchedBanners)
         dispatch(stopLoading())
-      } else {
-        // console.error(data.message);
       }
     } catch (error) {
       dispatch(stopLoading())
@@ -189,11 +191,17 @@ const Banner = ({ banner }) => {
     }
   }
 
-  const handleSwitchToggle = () => {
-    const newActiveState = !isActive;
-    setIsActive(newActiveState);
-    getactionapi(banner?._id, newActiveState, setLabelId);
-  };
+  const handleSwitchToggle = async (bannerId) => {
+    try {
+      const updatedBanners = banners.map((banner) =>
+        banner._id === bannerId ? { ...banner, isActive: !banner.isActive } : banner
+      )
+      setBanners(updatedBanners)
+      await getactionapi(bannerId, !banners.find(b => b._id === bannerId).isActive)
+    } catch (error) {
+      console.error('Failed to toggle switch:', error)
+    }
+  }
 
   return (
     <div>
@@ -234,9 +242,9 @@ const Banner = ({ banner }) => {
                   <div className="actions-cell">
                     <CFormSwitch
                       label=""
-                      id={labelId}
-                      checked={isActive}
-                      onChange={handleSwitchToggle}
+                      id={`formSwitch-${banner._id}`}
+                      checked={banner.isActive}
+                      onChange={() => handleSwitchToggle(banner._id)}
                     />
                     <CButton color="warning" onClick={() => handleEdit(index, banner?._id)}>
                       <CIcon icon={cilPencil} />
