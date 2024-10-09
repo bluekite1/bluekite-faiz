@@ -18,7 +18,7 @@ import {
   CTableHead,
   CTableHeaderCell,
   CTableRow,
-  CBadge
+  CBadge,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import {
@@ -42,7 +42,6 @@ import {
   cilPeople,
   cilUser,
   cilUserFemale,
-  
 } from '@coreui/icons'
 
 import avatar1 from 'src/assets/images/avatars/1.jpg'
@@ -62,104 +61,97 @@ import axiosInstance, { baseURL } from '../../utils/axiosConfig'
 import '../products/Products.css' // Import custom CSS file
 import getAllInquiries from '../../api/Inquiry/getAllInquiries'
 
-
 const Dashboard = () => {
   const dispatch = useDispatch()
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState([])
   const [products, setProducts] = useState([])
-  const [inquiries, setInquiries] = useState([]);
+  const [inquiries, setInquiries] = useState([])
 
   const user = useSelector((state) => state.user)
-  const userRole = user ? user.role : null;
+  const userRole = user ? user.role : null
   const vendorId = user._id
 
   const fetchRecentOrders = async () => {
     try {
-      dispatch(startLoading());
-      const recentOrdersData = await getRecentOrdersByVendor(vendorId);
+      dispatch(startLoading())
+      const recentOrdersData = await getRecentOrdersByVendor(vendorId)
 
-      console.log("recentOrdersData-->>", recentOrdersData)
-      setOrders(recentOrdersData);
-      dispatch(stopLoading());
+      console.log('recentOrdersData-->>', recentOrdersData)
+      setOrders(recentOrdersData)
+      dispatch(stopLoading())
     } catch (error) {
-      dispatch(stopLoading());
-      console.error('Failed to fetch orders:', error);
+      dispatch(stopLoading())
+      console.error('Failed to fetch orders:', error)
     }
-  };
+  }
 
   const fetchInquiries = async () => {
-    dispatch(startLoading());
+    dispatch(startLoading())
     try {
-      const response = await getAllInquiries();
-      setInquiries(response);
-      dispatch(stopLoading());
+      const response = await getAllInquiries()
+      setInquiries(response)
+      dispatch(stopLoading())
     } catch (error) {
-      console.error('Failed to get inquiries:', error);
-      setError(error.message);
-      dispatch(stopLoading());
+      console.error('Failed to get inquiries:', error)
+      setError(error.message)
+      dispatch(stopLoading())
     }
-  };
+  }
 
   useEffect(() => {
-    fetchInquiries();
-  }, []);
+    fetchInquiries()
+  }, [])
 
   useEffect(() => {
-    fetchRecentOrders();
-  }, [vendorId]);
+    fetchRecentOrders()
+  }, [vendorId])
 
   const fetchLowQuantityProducts = async () => {
     try {
-      dispatch(startLoading());
-      const lowQuantityProducts = await getProductsLowQuantity(vendorId);
+      dispatch(startLoading())
+      const lowQuantityProducts = await getProductsLowQuantity(vendorId)
 
-      console.log("lowQuantityProducts-->>", lowQuantityProducts)
-      setProducts(lowQuantityProducts);
-      dispatch(stopLoading());
+      console.log('lowQuantityProducts-->>', lowQuantityProducts)
+      setProducts(lowQuantityProducts)
+      dispatch(stopLoading())
     } catch (error) {
-      dispatch(stopLoading());
-      console.error('Failed to fetch orders:', error);
+      dispatch(stopLoading())
+      console.error('Failed to fetch orders:', error)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchLowQuantityProducts();
-  }, [vendorId]);
-
+    fetchLowQuantityProducts()
+  }, [vendorId])
 
   const handleStockUpdate = async (productId, product) => {
-    console.log("product--->>>", product)
+    console.log('product--->>>', product)
     try {
-      const response = await axiosInstance.put(`/products/${productId}`, product);
+      const response = await axiosInstance.put(`/products/${productId}`, product)
 
       if (response.status === 200) {
-        console.log('Stock updated successfully:', response.data.product);
+        console.log('Stock updated successfully:', response.data.product)
         // Optionally, update the product state to reflect the new quantity in the UI
       } else {
-        console.error('Failed to update stock:', response.data.message);
+        console.error('Failed to update stock:', response.data.message)
       }
     } catch (error) {
-      console.error('Error updating stock:', error);
+      console.error('Error updating stock:', error)
     }
-  };
+  }
 
   const getBadgeColor = (status) => {
     switch (status) {
       case 'pending':
-        return 'warning';
+        return 'warning'
       case 'responded':
-        return 'success';
+        return 'success'
       case 'closed':
-        return 'secondary';
+        return 'secondary'
       default:
-        return 'primary';
+        return 'primary'
     }
-  };
-
-
-
-
-
+  }
 
   return (
     <>
@@ -179,7 +171,6 @@ const Dashboard = () => {
                     <CTableHeaderCell>Products</CTableHeaderCell>
                     <CTableHeaderCell>Breakdown</CTableHeaderCell>
                     <CTableHeaderCell>Total</CTableHeaderCell>
-
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
@@ -190,37 +181,39 @@ const Dashboard = () => {
                       <CTableDataCell>{order.shippingAddress.address}</CTableDataCell>
                       <CTableDataCell>
                         {order.vendors.products.map((product, idx) => (
-                          <div key={idx}>
-                            {product.product.name}
-                          </div>
+                          <div key={idx}>{product.product.name}</div>
                         ))}
                       </CTableDataCell>
                       <CTableDataCell>
                         {order.vendors.products.map((product, idx) => {
-                          const actualPrice = product.price;
-                          const discountPercentage = product.discount;
-                          const discountAmount = (actualPrice * discountPercentage) / 100;
-                          const discountedPrice = (actualPrice - discountAmount) * product.quantity;
+                          const actualPrice = product.price
+                          const discountPercentage = product.discount
+                          const discountAmount = (actualPrice * discountPercentage) / 100
+                          const discountedPrice = (actualPrice - discountAmount) * product.quantity
 
                           return (
                             <div key={idx}>
-                              {product.quantity} x ₹{actualPrice.toFixed(2)} - {discountPercentage}% = ₹{discountedPrice.toFixed(2)}
+                              {product.quantity} x ₹{actualPrice.toFixed(2)} - {discountPercentage}%
+                              = ₹{discountedPrice.toFixed(2)}
                             </div>
-                          );
+                          )
                         })}
                       </CTableDataCell>
                       <CTableDataCell>
-                        ₹{order.vendors.products.reduce((total, product) => {
-                          const actualPrice = product.price;
-                          const discountPercentage = product.discount;
-                          const discountAmount = (actualPrice * discountPercentage) / 100;
-                          const discountedPrice = (actualPrice - discountAmount) * product.quantity;
+                        ₹
+                        {order.vendors.products
+                          .reduce((total, product) => {
+                            const actualPrice = product.price
+                            const discountPercentage = product.discount
+                            const discountAmount = (actualPrice * discountPercentage) / 100
+                            const discountedPrice =
+                              (actualPrice - discountAmount) * product.quantity
 
-                          return total + discountedPrice;
-                        }, 0).toFixed(2)}
+                            return total + discountedPrice
+                          }, 0)
+                          .toFixed(2)}
                       </CTableDataCell>
                       {/* <CTableDataCell>{order.isPaymentVerified ? "Paid" : "UnPaid"}</CTableDataCell> */}
-
                     </CTableRow>
                   ))}
                 </CTableBody>
@@ -264,47 +257,57 @@ const Dashboard = () => {
                         <input
                           type="number"
                           defaultValue={product.quantity}
-                          onChange={(e) => handleStockUpdate(product._id, { ...product, existingImages: product.images, quantity: e.target.value })}
+                          onChange={(e) =>
+                            handleStockUpdate(product._id, {
+                              ...product,
+                              existingImages: product.images,
+                              quantity: e.target.value,
+                            })
+                          }
                         />
                       </CTableDataCell>
                     </CTableRow>
                   ))}
                 </CTableBody>
               </CTable>
-
             </CCardBody>
           </CCard>
-          {userRole !== 'vendor'&&<CCard className="mb-4">
-            <CCardHeader>Customer Messages</CCardHeader>
-            <CCardBody>
-              <CTable responsive="sm" striped>
-                <CTableHead>
-                  <CTableRow>
-                    <CTableHeaderCell>#</CTableHeaderCell>
-                    <CTableHeaderCell>Subject</CTableHeaderCell>
-                    <CTableHeaderCell>Message</CTableHeaderCell>
-                    <CTableHeaderCell>Response</CTableHeaderCell>
-                    <CTableHeaderCell>Status</CTableHeaderCell>
-                    {/* <CTableHeaderCell>Actions</CTableHeaderCell> */}
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {inquiries.map((inquiry, index) => (
-                    <CTableRow key={inquiry._id}>
-                      <CTableDataCell>{index + 1}</CTableDataCell>
-                      <CTableDataCell>{inquiry.subject}</CTableDataCell>
-                      <CTableDataCell>{inquiry.message}</CTableDataCell>
-                      <CTableDataCell>{inquiry.response}</CTableDataCell>
-                      <CTableDataCell> <CBadge color={getBadgeColor(inquiry.status)}>{inquiry.status}</CBadge></CTableDataCell>
-                      {/* <CTableDataCell>
+          {userRole !== 'vendor' && (
+            <CCard className="mb-4">
+              <CCardHeader>Customer Messages</CCardHeader>
+              <CCardBody>
+                <CTable responsive="sm" striped>
+                  <CTableHead>
+                    <CTableRow>
+                      <CTableHeaderCell>#</CTableHeaderCell>
+                      <CTableHeaderCell>Subject</CTableHeaderCell>
+                      <CTableHeaderCell>Message</CTableHeaderCell>
+                      <CTableHeaderCell>Response</CTableHeaderCell>
+                      <CTableHeaderCell>Status</CTableHeaderCell>
+                      {/* <CTableHeaderCell>Actions</CTableHeaderCell> */}
+                    </CTableRow>
+                  </CTableHead>
+                  <CTableBody>
+                    {inquiries.map((inquiry, index) => (
+                      <CTableRow key={inquiry._id}>
+                        <CTableDataCell>{index + 1}</CTableDataCell>
+                        <CTableDataCell>{inquiry.subject}</CTableDataCell>
+                        <CTableDataCell>{inquiry.message}</CTableDataCell>
+                        <CTableDataCell>{inquiry.response}</CTableDataCell>
+                        <CTableDataCell>
+                          {' '}
+                          <CBadge color={getBadgeColor(inquiry.status)}>{inquiry.status}</CBadge>
+                        </CTableDataCell>
+                        {/* <CTableDataCell>
                         <CButton color="primary" onClick={() => toggleModal(inquiry._id)}>Send Response</CButton>
                       </CTableDataCell> */}
-                    </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
-            </CCardBody>
-          </CCard>}
+                      </CTableRow>
+                    ))}
+                  </CTableBody>
+                </CTable>
+              </CCardBody>
+            </CCard>
+          )}
         </CCol>
       </CRow>
     </>
