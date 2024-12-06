@@ -18,10 +18,10 @@ import {
   cilInfo,
   cilEnvelopeClosed,
   cilPhone,
-  cilSpeech
+  cilSpeech,
+  cilTruck,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
-
 
 const _nav = [
   {
@@ -53,8 +53,7 @@ const _nav = [
         component: CNavItem,
         name: 'Categories',
         to: '/products/categories-create',
-      }
-      
+      },
     ],
   },
   {
@@ -73,7 +72,6 @@ const _nav = [
       //   name: 'Refunds',
       //   to: '/orders/refund',
       // }
-      
     ],
   },
   {
@@ -114,6 +112,12 @@ const _nav = [
         to: '/banner/add-banner',
       },
     ],
+  },
+  {
+    component: CNavItem,
+    name: 'Delivery',
+    to: '/delivery', // Corrected the typo in the route
+    icon: <CIcon icon={cilTruck} customClassName="nav-icon" />, // Updated icon
   },
   {
     component: CNavTitle,

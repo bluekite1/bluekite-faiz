@@ -120,8 +120,8 @@ const AllOrders = () => {
 
                   return (
                     <div key={idx}>
-                      {product.quantity} x ₹{actualPrice.toFixed(2)} - {discountPercentage}% = ₹
-                      {discountedPrice.toFixed(2)}
+                      {product.quantity} x ₹{actualPrice.toFixed(2)} - {discountPercentage}% + ₹
+                      {order.deliveryCharge} delivery = ₹{discountedPrice.toFixed(2)}
                     </div>
                   )
                 })}
@@ -135,7 +135,7 @@ const AllOrders = () => {
                     const discountAmount = (actualPrice * discountPercentage) / 100
                     const discountedPrice = (actualPrice - discountAmount) * product.quantity
 
-                    return total + discountedPrice
+                    return total + discountedPrice + order.deliveryCharge
                   }, 0)
                   .toFixed(2)}
               </CTableDataCell>
